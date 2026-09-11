@@ -2,25 +2,38 @@
 
 原生 SwiftUI LAN 发送端，目标是把 iPhone 系统音频发送到现有 Windows MoDi Connect 的 `SpeakerOnly` 路线。Windows 不需要虚拟声卡、VB-CABLE 或更改默认输出设备。
 
-> 0.1.3 是播放回归修复版：撤回 0.1.2 的音频稳定性改动，恢复用户已确认可播放的 0.1.1 音频路径。0.1.1 保存在 `stable/0.1.1`，commit `19cd9dbf504eaa446e0919074866d8f4a04bb225`；未签名 IPA 安装前需要个人签名。
+> 0.1.4 是播放回归修复与低分配优化版：撤回 0.1.2 的音频稳定性改动，恢复用户已确认可播放的 0.1.1 音频路径。0.1.1 保存在 `stable/0.1.1`，commit `19cd9dbf504eaa446e0919074866d8f4a04bb225`；未签名 IPA 安装前需要个人签名。
 
-## 0.1.3 播放回归修复
+## 0.1.4 新版策略
 
 0.1.2 曾通过编译和单元测试，但用户真机反馈播放几秒后无声，并出现大量本地积压丢帧与调度迟到。这足以撤回该候选策略；仅凭发送端统计，不能断言持续无声的唯一机制或 Windows 接收状态。
 
-修复方式是完整恢复已验证基线，而非增大队列阈值：
+以已验证的捕获驱动方式恢复播放，随后只加入可关闭的 PCM 缓冲复用：
 - 实际路径恢复为 ScreenCaptureKit → AVAudioConverter → PCM16/960 samples 拼帧 → libopus → 原 MoDi packet → UDP → 现有 Windows SpeakerOnly。
 - 去掉定时发送、主动丢弃积压 PCM、补静音、音量衰减和新增 UDP 提交限额；真实捕获帧按基线逻辑发送。
 - 48 kHz / mono / PCM16 / 20 ms / 128 kbps / complexity 10 / CVBR / FEC / loss hint 15% 保持基线参数。Windows、协议、握手、端口与路由均不修改。
 - 保留 0.1.1 手动 IP/端口、扫码和 Bonjour 功能；删除失效的缓冲/音量设置和伪延迟显示。
-- 云端构建会将 14 个生产音频、传输和协议文件与固定 0.1.1 commit 逐字节比对，不一致立即失败。
+- 云端逐字节验证 11 个未修改的捕获、Opus、UDP、协议及握手文件与 0.1.1 一致；AudioConfig、AudioPipeline、PCMConverter 仅增加缓冲复用配置/接线/分配逻辑。
 - 新增 200/500/1000 ms 批量回调拼帧、不足一帧后暂停/恢复、1 秒音频经拼帧→Opus→协议→解码的回归测试。测试不等价于真实 ScreenCaptureKit / UDP / Windows 播放验收。
+
+### 已加入的软件优化与参考
+
+参考 [Apple TN3136 的长期存活转换器与源缓冲示例](https://developer.apple.com/documentation/technotes/tn3136-avaudioconverter-performing-sample-rate-conversions)，复用输入 AVAudioPCMBuffer，输出容量相同时复用输出缓冲；无需引入新库。目标是减少分配开销，不是改变 Opus 音质或证明无线干扰已消失。
+
+- 设置“复用 PCM 转换缓冲”默认开启。断开后可关闭，以同一音源进行 A/B 比较；更改在点击“完成”后生效。
+- 输入缓存必须匹配完整 AVAudioFormat 且容量足够，每次仅复制真实 frameLength。格式变化自动替换。
+- 输出缓存只在容量完全相同的时候复用，并清零 frameLength。Apple 明确说明转换会尝试填满目标容量，因此不能简单复用更大容量而改变转换器消耗节奏。
+- 不持有或异步传递缓存的裸指针；返回 Data 仍复制输出以拥有独立生命周期。未声称消除所有分配。
+- 测试比较开/关复用后的实际 PCM 字节，包括 48 kHz mono、44.1 kHz stereo、可变大小回调、源格式切换和暂停后的静音；稳定大小 100 次回调验证缓存分配为 2 次，对照为 200 次（只统计本转换器显式创建的 AVAudioPCMBuffer，不是系统总分配或 CPU 提升）。
+- 普通模拟器测试无法证明真机听感，测试结果以云端日志为准。
+
+研究但未移植：[Snapcast](https://github.com/snapcast/snapcast) 使用带时间标签的 TCP 音频块与客户端时钟同步/播放修正，无法单独放进当前 MoDi UDP 发送端而兼容原 Windows；[GStreamer GstAudioStreamAlign](https://gstreamer.freedesktop.org/documentation/audio/gstaudiostreamalign.html) 使用时间戳和采样数判定持续不连续，提示不能单凭回调到达抖动就丢帧。本版不复制这些项目源码、不改变协议、不新增接收端反馈字段。
 
 ### 真机验收
 
 先用默认 128 kbps 连续播放至少 10 分钟，再测试切换音源、暂停/恢复、停止/重新开始。确认不再发生“几秒后完全无声”；若复现，记录无声时 iOS 发送统计及 Windows 同时段日志。UI 的 Dropped frames 是本地处理异常计数，不是网络丢包率。
 
-本版首先恢复播放，不宣称解决原先的爆音、2.4 GHz 输出链路干扰或长期时钟漂移。0.1.3 尚需同一台移动设备和现有 Windows 真机验证。已确认可用的 0.1.1 源码和 IPA 继续保留，不覆盖。
+本版首先恢复播放并降低固定大小音频回调的缓冲分配频率，不宣称已解决原先的爆音、2.4 GHz 输出链路干扰或长期时钟漂移。0.1.4 尚需同一台移动设备和现有 Windows 真机验证。已确认可用的 0.1.1 源码和 IPA 继续保留，不覆盖。
 
 ## Requirements
 
@@ -116,7 +129,7 @@ xcodebuild test-without-building \
 ## Known limitations
 
 - 当前交付用于用户指定的个人互操作研究；不代表协议所有者授权或认证。源码已按用户授权上传个人公开仓库，未发布 App Store。
-- 0.1.1 已获用户真机可用反馈；0.1.2 已因播放回归撤回；0.1.3 恢复基线音频实现，仍须真机验收。
+- 0.1.1 已获用户真机可用反馈；0.1.2 已因播放回归撤回；0.1.4 恢复捕获驱动发送并增加可关闭的缓冲复用，仍须真机验收。
 - iOS 系统音频捕获必须经过系统 picker，用户可随时停止；App 无法静默绕过授权。
 - 后台、锁屏、通话、音频 route 变化和系统压力均可能终止 capture；实现会退出 streaming 并显示失败/重连状态，但最终行为必须在 iOS 27 真机确认。
 - DRM/受保护内容可能被静音或禁止捕获。

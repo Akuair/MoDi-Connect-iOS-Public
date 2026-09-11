@@ -19,7 +19,7 @@ final class AudioPipeline {
     private let protocolAdapter: any MoDiProtocolAdapter
     private let queue = DispatchQueue(label: "com.modi.connect.audio-pipeline", qos: .userInteractive)
     private let capturer = SystemAudioCapturer()
-    private let converter = PCMConverter()
+    private let converter: PCMConverter
     private let assembler: PCMFrameAssembler
     private var encoder: OpusEncoder?
     private var transport: UDPTransport?
@@ -31,6 +31,7 @@ final class AudioPipeline {
 
     init(config: AudioConfig = .default, protocolAdapter: any MoDiProtocolAdapter) {
         self.config = config
+        converter = PCMConverter(config: config)
         self.protocolAdapter = protocolAdapter
         assembler = PCMFrameAssembler(frameBytes: config.frameBytes)
 

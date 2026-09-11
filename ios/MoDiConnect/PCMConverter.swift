@@ -24,8 +24,13 @@ final class PCMConverter {
     private let targetFormat: AVAudioFormat
     private var converter: AVAudioConverter?
     private var inputFormat: AVAudioFormat?
+    private let reuseBuffers: Bool
+    private var cachedSource: AVAudioPCMBuffer?
+    private var cachedOutput: AVAudioPCMBuffer?
+    private(set) var bufferAllocationCount = 0
 
     init(config: AudioConfig = .default) {
+        reuseBuffers = config.reuseConversionBuffers
         targetFormat = AVAudioFormat(
             commonFormat: .pcmFormatInt16,
             sampleRate: config.sampleRate,
@@ -40,9 +45,18 @@ final class PCMConverter {
         let sourceFormat = AVAudioFormat(cmAudioFormatDescription: description)
 
         let inputFrames = AVAudioFrameCount(CMSampleBufferGetNumSamples(sampleBuffer))
-        guard inputFrames > 0,
-              let source = AVAudioPCMBuffer(pcmFormat: sourceFormat, frameCapacity: inputFrames)
-        else { return Data() }
+        guard inputFrames > 0 else { return Data() }
+        let source: AVAudioPCMBuffer
+        if reuseBuffers, let cachedSource,
+           cachedSource.format.isEqual(sourceFormat), cachedSource.frameCapacity >= inputFrames {
+            source = cachedSource
+        } else {
+            guard let allocated = AVAudioPCMBuffer(pcmFormat: sourceFormat, frameCapacity: inputFrames)
+            else { throw PCMConverterError.unsupportedFormat }
+            source = allocated
+            bufferAllocationCount += 1
+            if reuseBuffers { cachedSource = source }
+        }
         source.frameLength = inputFrames
 
         let copyStatus = CMSampleBufferCopyPCMDataIntoAudioBufferList(
@@ -65,8 +79,19 @@ final class PCMConverter {
 
         let ratio = targetFormat.sampleRate / sourceFormat.sampleRate
         let capacity = AVAudioFrameCount(ceil(Double(inputFrames) * ratio) + 64)
-        guard let output = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: capacity)
-        else { throw PCMConverterError.unsupportedFormat }
+        // Keep the exact requested capacity: convert() tries to fill capacity.
+        // Reusing a larger destination could change resampler consumption/timing.
+        let output: AVAudioPCMBuffer
+        if reuseBuffers, let cachedOutput, cachedOutput.frameCapacity == capacity {
+            output = cachedOutput
+        } else {
+            guard let allocated = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: capacity)
+            else { throw PCMConverterError.unsupportedFormat }
+            output = allocated
+            bufferAllocationCount += 1
+            if reuseBuffers { cachedOutput = output }
+        }
+        output.frameLength = 0
 
         var supplied = false
         var conversionError: NSError?
@@ -98,4 +123,3 @@ final class PCMConverter {
             lhs.isInterleaved == rhs.isInterleaved
     }
 }
-

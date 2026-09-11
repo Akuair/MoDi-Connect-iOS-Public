@@ -47,7 +47,8 @@ struct HomeView: View {
 
                 if app.state == .streaming {
                     Section("传输统计") {
-                        LabeledContent("发送模式", value: "捕获驱动 · 0.1.1 兼容路径")
+                        LabeledContent("发送模式", value: "捕获驱动 · 无定时补帧")
+                        LabeledContent("转换缓冲复用", value: app.reuseConversionBuffers ? "开启" : "关闭（基线分配方式）")
                         LabeledContent("Packet rate", value: String(format: "%.1f pps", app.metrics.packetRate))
                         LabeledContent("Bitrate", value: String(format: "%.1f kbps", app.metrics.bitrate / 1_000))
                         LabeledContent("Dropped frames", value: "\(app.metrics.droppedFrames)")
@@ -102,7 +103,9 @@ private struct SettingsView: View {
                 }
                 .disabled(!app.canConnect)
                 Toggle("Debug logging", isOn: $app.debugLogging)
-                Text("版本 0.1.3 · 已撤回 0.1.2 音频策略。音频参数需断开后修改。")
+                Toggle("复用 PCM 转换缓冲", isOn: $app.reuseConversionBuffers)
+                    .disabled(!app.canConnect)
+                Text("版本 0.1.4 · 缓冲复用减少内存分配，不增加发送等待，也不丢弃音频。默认开启；可断开后关闭进行对照。已撤回 0.1.2 定时发送策略。")
                     .font(.footnote)
             }
             .navigationTitle("设置")

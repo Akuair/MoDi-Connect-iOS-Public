@@ -27,14 +27,14 @@ jobs:
           path: working-baseline
           sparse-checkout: ios/MoDiConnect
           persist-credentials: false
-      - name: Verify 0.1.3 restores the exact working audio path
+      - name: Verify unchanged capture and Windows compatibility path
         shell: bash
         run: |
           set -euo pipefail
-          for FILE in AudioConfig.swift AudioPipeline.swift PCMConverter.swift PCMFrameAssembler.swift SystemAudioCapturer.swift OpusEncoder.swift OpusBridge.c OpusBridge.h UDPTransport.swift ConnectionManager.swift HandshakeManager.swift MoDiProtocolAdapter.swift PacketSequence.swift MoDiSession.swift; do
+          for FILE in PCMFrameAssembler.swift SystemAudioCapturer.swift OpusEncoder.swift OpusBridge.c OpusBridge.h UDPTransport.swift ConnectionManager.swift HandshakeManager.swift MoDiProtocolAdapter.swift PacketSequence.swift MoDiSession.swift; do
             cmp "working-baseline/ios/MoDiConnect/$FILE" "ios/MoDiConnect/$FILE"
           done
-          echo 'PASS: 14 production audio/transport/protocol files byte-identical to user-confirmed 0.1.1'
+          echo 'PASS: 11 production capture/codec/transport/protocol files byte-identical to user-confirmed 0.1.1'
       - name: Obtain unchanged upstream protocol test dependency
         uses: actions/checkout@v4
         with:
