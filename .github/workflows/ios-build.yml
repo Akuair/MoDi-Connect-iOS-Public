@@ -44,6 +44,18 @@ jobs:
           dotnet run --project ios/Tools/ProtocolProbe -- /tmp/modi-swift-packets.txt
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project ios/MoDiConnect.xcodeproj -scheme MoDiConnect
+      - name: Inspect capture APIs in installed Apple SDKs
+        shell: bash
+        run: |
+          xcodebuild -version
+          for SDK in iphoneos iphonesimulator; do
+            SDK_PATH=$(xcrun --sdk "$SDK" --show-sdk-path)
+            echo "SDK: $SDK_PATH"
+            find "$SDK_PATH/System/Library/Frameworks" -maxdepth 2 -iname '*ScreenCapture*' -print
+            if [ -d "$SDK_PATH/System/Library/Frameworks/ScreenCaptureKit.framework/Headers" ]; then
+              grep -n -E 'API_AVAILABLE|API_UNAVAILABLE|showsMicrophone|showsCamera|capturesAudio|excludesCurrent|sampleRate|channelCount|minimumFrameInterval' "$SDK_PATH/System/Library/Frameworks/ScreenCaptureKit.framework/Headers/"*.h
+            fi
+          done
       - name: Build and test
         run: >-
           xcodebuild test
@@ -53,6 +65,7 @@ jobs:
           -resultBundlePath build/iOS-Tests.xcresult
           CODE_SIGNING_ALLOWED=NO
       - name: Build device application (unsigned)
+        if: ${{ !cancelled() }}
         run: >-
           xcodebuild build
           -project ios/MoDiConnect.xcodeproj
@@ -96,3 +109,4 @@ jobs:
           path: build/iOS-Tests.xcresult
           if-no-files-found: ignore
           retention-days: 7
+
