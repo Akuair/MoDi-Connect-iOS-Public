@@ -10,6 +10,7 @@ final class AppState: ObservableObject {
     @Published private(set) var metrics = StreamingMetrics()
     @Published var bitrate = 128_000
     @Published var senderBufferMilliseconds = 40
+    @Published var outputAttenuationDB = 0
     @Published var debugLogging = false {
         didSet { MoDiLogger.debugEnabled = debugLogging }
     }
@@ -81,7 +82,8 @@ final class AppState: ObservableObject {
         guard state == .idle || state == .discovering || isFailure else { return }
         connection.stop()
         connection = ConnectionManager(config: AudioConfig(
-            bitrate: bitrate, senderBufferMilliseconds: senderBufferMilliseconds
+            bitrate: bitrate, senderBufferMilliseconds: senderBufferMilliseconds,
+            outputGain: Float(pow(10.0, Double(outputAttenuationDB) / 20))
         ))
         bindConnection()
         state = .discovering

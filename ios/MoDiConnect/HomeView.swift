@@ -111,6 +111,14 @@ private struct SettingsView: View {
                 .disabled(!app.canConnect)
                 Text("缓冲增加延迟，不改变 Windows。先试 128 kbps + 40 ms；捕获补静音持续增长时可试 80 ms。音频参数需断开后修改。")
                     .font(.footnote)
+                Picker("发送音量衰减", selection: $app.outputAttenuationDB) {
+                    Text("0 dB（保持原音量）").tag(0)
+                    Text("−6 dB（同时播放时测试）").tag(-6)
+                    Text("−12 dB").tag(-12)
+                }
+                .disabled(!app.canConnect)
+                Text("只降低手机送出的电平。若是 2.4 GHz 耳机无线干扰，降低音量或增加缓冲无法修复该无线链路。")
+                    .font(.footnote)
                 Toggle("Debug logging", isOn: $app.debugLogging)
             }
             .navigationTitle("设置")

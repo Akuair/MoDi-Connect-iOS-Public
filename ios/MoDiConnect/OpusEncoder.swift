@@ -45,7 +45,8 @@ final class OpusEncoder {
             throw OpusEncoderError.invalidFrame(pcm16LE.count)
         }
         let capacity = Int32(output.count)
-        let count: Int32 = pcm16LE.withUnsafeBytes { pcm in
+        let input = Self.attenuate(pcm16LE, gain: config.outputGain)
+        let count: Int32 = input.withUnsafeBytes { pcm in
             output.withUnsafeMutableBytes { encoded in
                 modi_opus_encode(
                     encoder,
@@ -58,6 +59,21 @@ final class OpusEncoder {
         }
         guard count > 0 else { throw OpusEncoderError.encoding(count) }
         return Data(output.prefix(Int(count)))
+    }
+
+    /// Optional headroom for simultaneous Windows playback, not noise suppression.
+    /// Default gain is unity and returns the original Data without a copy.
+    static func attenuate(_ pcm: Data, gain: Float) -> Data {
+        precondition(gain > 0 && gain <= 1 && pcm.count.isMultiple(of: 2))
+        guard gain < 1 else { return pcm }
+        var output = pcm
+        output.withUnsafeMutableBytes { (raw: UnsafeMutableRawBufferPointer) in
+            let samples = raw.bindMemory(to: Int16.self)
+            for index in samples.indices {
+                samples[index] = Int16(clamping: Int((Float(samples[index]) * gain).rounded()))
+            }
+        }
+        return output
     }
 
     static func decodedSampleCountForTest(_ packet: Data, frameSamples: Int = 960) -> Int32 {
@@ -74,3 +90,4 @@ final class OpusEncoder {
         }
     }
 }
+

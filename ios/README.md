@@ -15,6 +15,7 @@
 - 音频回调与转换/编码使用同一串行队列，去除一次无界 async 转发。输入/输出 AVAudioPCMBuffer 按容量复用，停止时清除重采样器状态。
 - UDP 请求 `interactiveVoice` 服务等级；只是向系统提示流量类型，路由器未必尊重。最多允许 4 个尚未完成本地提交的 datagram，阻塞时走原重连/新握手，避免无限堆积。
 - UI 显示本地提交速率、积压丢帧、补静音、调度迟到和捕获间隔。没有接收反馈，不能从这些数值声称测出了网络丢包率、实际播放延迟或已经改善的百分比。
+- 可选发送音量衰减 0 / −6 / −12 dB，默认 0 不改原音量。用于电脑本地声音与 MoDi 同时播放时的电平对照，不是降噪/无线修复，不能保证混音永不削波。
 
 ### 源码证据与方案边界
 
@@ -33,6 +34,10 @@ Windows `AudioEngine.OnPacketReceived` 先 `TrackSequence` / `DecodeFec` / `Deco
 3. 若新统计平稳但电脑仍杂音，查看原 Windows 的 `[Diag] decFail / pullNull / jbCount`，区分接收/解码失败与播放端短缺；也检查 Windows 音量缩放是否造成削波。不要把 source 暂停产生的补静音当成 Wi-Fi 丢包。
 4. 分别验证正常播放、快速切 App、源暂停/恢复、锁屏、断网/重连和停止后重新开始。暂未实测无线丢包场景与长期设备时钟漂移；新版不宣称可修复 Windows 解码顺序或播放调度的限制。
 5. 效果不佳时重签安装已保存的 0.1.1 IPA，或从 `stable/0.1.1` 构建回退。
+
+补充现场线索：用户报告电脑与移动端同时播放、移动端切换音源时爆音/断续，Windows 使用 2.4 GHz 无线输出设备。尚不能据此确定是网络丢包、输出射频干扰还是混音电平。可依次比较：仅 MoDi 播放 vs 同时播放；0 dB vs −6 dB；若现成有线输出可用，临时人工对照；同一局域网下信号良好的 5 GHz Wi-Fi 或电脑有线网络；将无线接收器远离 USB 3.x 数据线/集线器。软件不会自动切换默认设备或修改 Windows 配置。
+
+硬件依据：[Intel USB 3.0 对 2.4 GHz 干扰白皮书](https://www.intel.com/content/www/us/en/content-details/841692/usb-3-0-radio-frequency-interference-impact-on-2-4-ghz-wireless-devices-white-paper.html)、[Apple 无线干扰排查](https://support.apple.com/en-vn/102319)。如果有线播放正常而同条件 2.4 GHz 输出异常，优先查输出无线链路；如果两者都有，继续查捕获统计及 Windows 日志。
 
 ## Requirements
 
