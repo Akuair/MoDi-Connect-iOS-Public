@@ -9,6 +9,7 @@ final class AppState: ObservableObject {
     @Published var selectedDeviceID: String?
     @Published private(set) var metrics = StreamingMetrics()
     @Published var bitrate = 128_000
+    @Published var senderBufferMilliseconds = 40
     @Published var debugLogging = false {
         didSet { MoDiLogger.debugEnabled = debugLogging }
     }
@@ -79,7 +80,9 @@ final class AppState: ObservableObject {
     func applySettings() {
         guard state == .idle || state == .discovering || isFailure else { return }
         connection.stop()
-        connection = ConnectionManager(config: AudioConfig(bitrate: bitrate))
+        connection = ConnectionManager(config: AudioConfig(
+            bitrate: bitrate, senderBufferMilliseconds: senderBufferMilliseconds
+        ))
         bindConnection()
         state = .discovering
     }

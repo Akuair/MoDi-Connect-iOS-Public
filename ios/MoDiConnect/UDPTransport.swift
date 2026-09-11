@@ -29,6 +29,7 @@ final class UDPTransport {
         close()
         let parameters = NWParameters.udp
         parameters.includePeerToPeer = false
+        parameters.serviceClass = .interactiveVoice
         let connection = NWConnection(host: host, port: port, using: parameters)
         self.connection = connection
 
@@ -82,10 +83,10 @@ final class UDPTransport {
     /// Submits a datagram without blocking the realtime audio queue. Calls made by the
     /// serial audio queue retain submission order; Network.framework owns the bytes
     /// until the completion handler fires.
-    func enqueueSend(_ data: Data) throws {
+    func enqueueSend(_ data: Data, completion: @escaping (Error?) -> Void) throws {
         guard let connection else { throw UDPTransportError.notConnected }
-        connection.send(content: data, completion: .contentProcessed { [weak self] error in
-            if let error { self?.onFailure?(error) }
+        connection.send(content: data, completion: .contentProcessed { error in
+            completion(error)
         })
     }
 
@@ -116,3 +117,4 @@ final class UDPTransport {
 
     deinit { close() }
 }
+

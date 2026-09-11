@@ -25,6 +25,8 @@ final class SystemAudioCapturer {
     var onStarted: (() -> Void)?
     var onStopped: ((Error?) -> Void)?
 
+    init(sampleQueue: DispatchQueue) {}
+
     @MainActor
     func requestFullDisplayCapture() {
         onStopped?(SystemAudioCaptureError.requiresPhysicalDevice)
@@ -40,11 +42,12 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
     var onStarted: (() -> Void)?
     var onStopped: ((Error?) -> Void)?
 
-    private let sampleQueue = DispatchQueue(label: "com.modi.connect.capture", qos: .userInteractive)
+    private let sampleQueue: DispatchQueue
     private var stream: SCStream?
     private var stopping = false
 
-    override init() {
+    init(sampleQueue: DispatchQueue) {
+        self.sampleQueue = sampleQueue
         super.init()
         let picker = SCContentSharingPicker.shared
         var configuration = SCContentSharingPickerConfiguration()
@@ -67,10 +70,10 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
     func stop() {
         stopping = true
         guard let stream else { return }
+        self.stream = nil
         Task { [weak self] in
             do { try await stream.stopCapture() }
-            catch { self?.onStopped?(error) }
-            self?.stream = nil
+            catch { MoDiLogger.debug(error.localizedDescription, logger: MoDiLogger.audio) }
         }
     }
 
@@ -94,9 +97,12 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
 
     @MainActor
     private func start(filter: SCContentFilter) async {
+        guard !stopping else { return }
         if let existing = stream {
+            self.stream = nil
             try? await existing.stopCapture()
         }
+        guard !stopping else { return }
 
         let configuration = SCStreamConfiguration()
         configuration.capturesAudio = true
@@ -112,19 +118,22 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
             try newStream.addStreamOutput(self, type: .screen, sampleHandlerQueue: sampleQueue)
             self.stream = newStream
             try await newStream.startCapture()
+            guard self.stream === newStream, !stopping else { return }
             onStarted?()
         } catch {
+            guard self.stream === newStream else { return }
             self.stream = nil
             onStopped?(error)
         }
     }
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
-        guard type == .audio, sampleBuffer.isValid else { return }
+        guard self.stream === stream, type == .audio, sampleBuffer.isValid else { return }
         onAudio?(sampleBuffer)
     }
 
     func stream(_ stream: SCStream, didStopWithError error: any Error) {
+        guard self.stream === stream else { return }
         self.stream = nil
         if !stopping { onStopped?(error) }
     }

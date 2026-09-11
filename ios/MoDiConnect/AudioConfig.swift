@@ -11,6 +11,7 @@ struct AudioConfig: Sendable {
     let useFEC: Bool
     let packetLossPercent: Int
     let useConstrainedVBR: Bool
+    let senderBufferMilliseconds: Int
 
     init(
         sampleRate: Double = 48_000,
@@ -20,7 +21,8 @@ struct AudioConfig: Sendable {
         complexity: Int = 10,
         useFEC: Bool = true,
         packetLossPercent: Int = 15,
-        useConstrainedVBR: Bool = true
+        useConstrainedVBR: Bool = true,
+        senderBufferMilliseconds: Int = 40
     ) {
         self.sampleRate = sampleRate
         self.channels = channels
@@ -30,8 +32,10 @@ struct AudioConfig: Sendable {
         self.useFEC = useFEC
         self.packetLossPercent = packetLossPercent
         self.useConstrainedVBR = useConstrainedVBR
+        self.senderBufferMilliseconds = senderBufferMilliseconds
     }
 
     var frameSamples: Int { Int(sampleRate) * frameMilliseconds / 1_000 }
     var frameBytes: Int { frameSamples * MemoryLayout<Int16>.size }
 }
+

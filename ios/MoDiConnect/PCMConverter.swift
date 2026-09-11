@@ -24,6 +24,8 @@ final class PCMConverter {
     private let targetFormat: AVAudioFormat
     private var converter: AVAudioConverter?
     private var inputFormat: AVAudioFormat?
+    private var sourceBuffer: AVAudioPCMBuffer?
+    private var outputBuffer: AVAudioPCMBuffer?
 
     init(config: AudioConfig = .default) {
         targetFormat = AVAudioFormat(
@@ -40,9 +42,12 @@ final class PCMConverter {
         let sourceFormat = AVAudioFormat(cmAudioFormatDescription: description)
 
         let inputFrames = AVAudioFrameCount(CMSampleBufferGetNumSamples(sampleBuffer))
-        guard inputFrames > 0,
-              let source = AVAudioPCMBuffer(pcmFormat: sourceFormat, frameCapacity: inputFrames)
-        else { return Data() }
+        guard inputFrames > 0 else { return Data() }
+        if !sameFormat(inputFormat, sourceFormat) { reset() }
+        if sourceBuffer == nil || sourceBuffer!.frameCapacity < inputFrames {
+            sourceBuffer = AVAudioPCMBuffer(pcmFormat: sourceFormat, frameCapacity: inputFrames)
+        }
+        guard let source = sourceBuffer else { throw PCMConverterError.unsupportedFormat }
         source.frameLength = inputFrames
 
         let copyStatus = CMSampleBufferCopyPCMDataIntoAudioBufferList(
@@ -65,8 +70,11 @@ final class PCMConverter {
 
         let ratio = targetFormat.sampleRate / sourceFormat.sampleRate
         let capacity = AVAudioFrameCount(ceil(Double(inputFrames) * ratio) + 64)
-        guard let output = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: capacity)
-        else { throw PCMConverterError.unsupportedFormat }
+        if outputBuffer == nil || outputBuffer!.frameCapacity < capacity {
+            outputBuffer = AVAudioPCMBuffer(pcmFormat: targetFormat, frameCapacity: capacity)
+        }
+        guard let output = outputBuffer else { throw PCMConverterError.unsupportedFormat }
+        output.frameLength = 0
 
         var supplied = false
         var conversionError: NSError?
@@ -88,6 +96,13 @@ final class PCMConverter {
             return Data()
         }
         return Data(bytes: bytes, count: byteCount)
+    }
+
+    func reset() {
+        converter = nil
+        inputFormat = nil
+        sourceBuffer = nil
+        outputBuffer = nil
     }
 
     private func sameFormat(_ lhs: AVAudioFormat?, _ rhs: AVAudioFormat) -> Bool {

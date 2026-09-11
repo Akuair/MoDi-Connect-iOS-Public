@@ -47,10 +47,15 @@ struct HomeView: View {
 
                 if app.state == .streaming {
                     Section("传输统计") {
-                        LabeledContent("Latency", value: String(format: "%.0f ms+", app.metrics.latencyMilliseconds))
+                        LabeledContent("发送缓冲（非端到端延迟）", value: "\(app.metrics.queuedMilliseconds) ms")
                         LabeledContent("Packet rate", value: String(format: "%.1f pps", app.metrics.packetRate))
                         LabeledContent("Bitrate", value: String(format: "%.1f kbps", app.metrics.bitrate / 1_000))
-                        LabeledContent("Dropped frames", value: "\(app.metrics.droppedFrames)")
+                        LabeledContent("本地积压丢帧", value: "\(app.metrics.droppedFrames)")
+                        LabeledContent("捕获不足补静音", value: "\(app.metrics.concealedFrames)")
+                        LabeledContent("发送调度迟到", value: "\(app.metrics.lateTicks)")
+                        LabeledContent("最近最大捕获间隔", value: String(format: "%.1f ms", app.metrics.maximumCaptureGapMilliseconds))
+                        Text("补静音也可能是源 App 暂停。统计不是网络丢包率，Windows 未提供接收反馈。")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
 
@@ -98,6 +103,14 @@ private struct SettingsView: View {
                     Text("96 kbps").tag(96_000)
                     Text("128 kbps（Android 默认）").tag(128_000)
                 }
+                .disabled(!app.canConnect)
+                Picker("发送缓冲", selection: $app.senderBufferMilliseconds) {
+                    Text("40 ms（默认）").tag(40)
+                    Text("80 ms（更耐捕获抖动）").tag(80)
+                }
+                .disabled(!app.canConnect)
+                Text("缓冲增加延迟，不改变 Windows。先试 128 kbps + 40 ms；捕获补静音持续增长时可试 80 ms。音频参数需断开后修改。")
+                    .font(.footnote)
                 Toggle("Debug logging", isOn: $app.debugLogging)
             }
             .navigationTitle("设置")
