@@ -47,10 +47,12 @@ struct HomeView: View {
 
                 if app.state == .streaming {
                     Section("传输统计") {
-                        LabeledContent("Latency", value: String(format: "%.0f ms+", app.metrics.latencyMilliseconds))
+                        LabeledContent("发送模式", value: "捕获驱动 · 0.1.1 兼容路径")
                         LabeledContent("Packet rate", value: String(format: "%.1f pps", app.metrics.packetRate))
                         LabeledContent("Bitrate", value: String(format: "%.1f kbps", app.metrics.bitrate / 1_000))
                         LabeledContent("Dropped frames", value: "\(app.metrics.droppedFrames)")
+                        Text("此计数记录本地处理异常，不是网络丢包率。无额外定时发送、主动积压丢帧或补静音；实际端到端延迟未测量。")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
 
@@ -98,7 +100,10 @@ private struct SettingsView: View {
                     Text("96 kbps").tag(96_000)
                     Text("128 kbps（Android 默认）").tag(128_000)
                 }
+                .disabled(!app.canConnect)
                 Toggle("Debug logging", isOn: $app.debugLogging)
+                Text("版本 0.1.3 · 已撤回 0.1.2 音频策略。音频参数需断开后修改。")
+                    .font(.footnote)
             }
             .navigationTitle("设置")
             .toolbar {
@@ -110,4 +115,3 @@ private struct SettingsView: View {
         }
     }
 }
-
