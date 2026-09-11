@@ -2,7 +2,7 @@
 
 原生 SwiftUI LAN 发送端，目标是把 iPhone 系统音频发送到现有 Windows MoDi Connect 的 `SpeakerOnly` 路线。Windows 不需要虚拟声卡、VB-CABLE 或更改默认输出设备。
 
-> 当前状态：已接入独立 Swift 兼容 codec，用仓库原版 .NET 0.1.1 协议库验证了四个固定 wire 样例。iOS 不再依赖官方 iOS SDK。实际 Swift 执行、Xcode 编译和真机音频链路仍待验证。详见 [WIRE-COMPATIBILITY.md](WIRE-COMPATIBILITY.md)。
+> 2026-09-11 云编译状态：Xcode 27 beta 6 模拟器测试与 arm64 真机 Release 构建 PASS，已生成未签名 IPA。5 项单元测试通过、2 项硬件测试跳过；224 个生产 Swift packet 与原版 .NET codec 交叉校验通过。实际 iPhone → Windows 音频播放仍未验证，安装前需要个人签名。详见 [成功构建](https://github.com/Akuair/MoDi-Connect-iOS-Public/actions/runs/34558863019) 与 [WIRE-COMPATIBILITY.md](WIRE-COMPATIBILITY.md)。
 
 ## Requirements
 

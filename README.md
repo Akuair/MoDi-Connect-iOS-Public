@@ -6,4 +6,7 @@ The iOS application sources and modifications are distributed under GPL-3.0-or-l
 
 See [iOS build and usage instructions](ios/README.md) and [compatibility test status](ios/WIRE-COMPATIBILITY.md).
 
-The workflow targets Xcode 27 and produces an **unsigned** arm64 IPA, which requires personal signing before installation. Compilation and real iPhone-to-Windows playback are not yet verified. Android and Windows implementations are unchanged and remain in the upstream repository.
+The workflow targets Xcode 27 and produces an **unsigned** arm64 IPA, which requires personal signing before installation. [Cloud build passed on 2026-09-11](https://github.com/Akuair/MoDi-Connect-iOS-Public/actions/runs/34558863019): 5 unit tests passed, 2 hardware tests skipped, 224 protocol packets cross-checked against the original .NET codec. Real iPhone-to-Windows playback is not yet verified. Android and Windows implementations are unchanged and remain in the upstream repository.
+
+IPA SHA-256: `137b9a567083be71bd4b4eaf9e56f38d04d4b3d1d234d48012bfb3ee6b6eda61`.
+
