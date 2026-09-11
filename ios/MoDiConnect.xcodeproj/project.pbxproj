@@ -1,0 +1,132 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		200000000000000000000001 /* AudioConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000001 /* AudioConfig.swift */; };
+		200000000000000000000002 /* ConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000002 /* ConnectionState.swift */; };
+		200000000000000000000003 /* MoDiSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000003 /* MoDiSession.swift */; };
+		200000000000000000000004 /* PacketSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000004 /* PacketSequence.swift */; };
+		200000000000000000000005 /* MoDiLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000005 /* MoDiLogger.swift */; };
+		200000000000000000000006 /* MoDiProtocolAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000006 /* MoDiProtocolAdapter.swift */; };
+		200000000000000000000007 /* PCMFrameAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000007 /* PCMFrameAssembler.swift */; };
+		200000000000000000000008 /* OpusEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000008 /* OpusEncoder.swift */; };
+		200000000000000000000009 /* PCMConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000009 /* PCMConverter.swift */; };
+		20000000000000000000000A /* SystemAudioCapturer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000A /* SystemAudioCapturer.swift */; };
+		20000000000000000000000B /* MoDiDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000B /* MoDiDiscovery.swift */; };
+		20000000000000000000000C /* UDPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000C /* UDPTransport.swift */; };
+		20000000000000000000000D /* HandshakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000D /* HandshakeManager.swift */; };
+		20000000000000000000000E /* AudioPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000E /* AudioPipeline.swift */; };
+		20000000000000000000000F /* ConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000000F /* ConnectionManager.swift */; };
+		200000000000000000000010 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000010 /* AppState.swift */; };
+		200000000000000000000011 /* MoDiConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000011 /* MoDiConnectApp.swift */; };
+		200000000000000000000012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000012 /* HomeView.swift */; };
+		200000000000000000000013 /* OpusBridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000013 /* OpusBridge.c */; };
+		200000000000000000000014 /* opus in Frameworks */ = {isa = PBXBuildFile; productRef = 800000000000000000000001 /* opus */; };
+		200000000000000000000015 /* PCMFrameAssemblerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000017 /* PCMFrameAssemblerTests.swift */; };
+		200000000000000000000016 /* OpusEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000018 /* OpusEncoderTests.swift */; };
+		200000000000000000000017 /* ProtocolCompatibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000019 /* ProtocolCompatibilityTests.swift */; };
+		200000000000000000000018 /* ogg in Frameworks */ = {isa = PBXBuildFile; productRef = 800000000000000000000003 /* ogg */; };
+		200000000000000000000019 /* HardwareIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30000000000000000000001C /* HardwareIntegrationTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		900000000000000000000001 = {isa = PBXContainerItemProxy; containerPortal = 000000000000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = 100000000000000000000001; remoteInfo = MoDiConnect; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		300000000000000000000001 /* AudioConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioConfig.swift; sourceTree = "<group>"; };
+		300000000000000000000002 /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
+		300000000000000000000003 /* MoDiSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoDiSession.swift; sourceTree = "<group>"; };
+		300000000000000000000004 /* PacketSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketSequence.swift; sourceTree = "<group>"; };
+		300000000000000000000005 /* MoDiLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoDiLogger.swift; sourceTree = "<group>"; };
+		300000000000000000000006 /* MoDiProtocolAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoDiProtocolAdapter.swift; sourceTree = "<group>"; };
+		300000000000000000000007 /* PCMFrameAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMFrameAssembler.swift; sourceTree = "<group>"; };
+		300000000000000000000008 /* OpusEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpusEncoder.swift; sourceTree = "<group>"; };
+		300000000000000000000009 /* PCMConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMConverter.swift; sourceTree = "<group>"; };
+		30000000000000000000000A /* SystemAudioCapturer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemAudioCapturer.swift; sourceTree = "<group>"; };
+		30000000000000000000000B /* MoDiDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoDiDiscovery.swift; sourceTree = "<group>"; };
+		30000000000000000000000C /* UDPTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPTransport.swift; sourceTree = "<group>"; };
+		30000000000000000000000D /* HandshakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandshakeManager.swift; sourceTree = "<group>"; };
+		30000000000000000000000E /* AudioPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPipeline.swift; sourceTree = "<group>"; };
+		30000000000000000000000F /* ConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionManager.swift; sourceTree = "<group>"; };
+		300000000000000000000010 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		300000000000000000000011 /* MoDiConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoDiConnectApp.swift; sourceTree = "<group>"; };
+		300000000000000000000012 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		300000000000000000000013 /* OpusBridge.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = OpusBridge.c; sourceTree = "<group>"; };
+		300000000000000000000014 /* OpusBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpusBridge.h; sourceTree = "<group>"; };
+		300000000000000000000015 /* Bridging Header */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MoDiConnect-Bridging-Header.h"; sourceTree = "<group>"; };
+		300000000000000000000016 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		300000000000000000000017 /* PCMFrameAssemblerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMFrameAssemblerTests.swift; sourceTree = "<group>"; };
+		300000000000000000000018 /* OpusEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpusEncoderTests.swift; sourceTree = "<group>"; };
+		300000000000000000000019 /* ProtocolCompatibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolCompatibilityTests.swift; sourceTree = "<group>"; };
+		30000000000000000000001A /* MoDiConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoDiConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		30000000000000000000001B /* MoDiConnectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoDiConnectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		30000000000000000000001C /* HardwareIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareIntegrationTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		400000000000000000000001 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (200000000000000000000014 /* opus in Frameworks */,200000000000000000000018 /* ogg in Frameworks */,); runOnlyForDeploymentPostprocessing = 0; };
+		400000000000000000000002 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		500000000000000000000001 = {isa = PBXGroup; children = (500000000000000000000002 /* MoDiConnect */, 500000000000000000000003 /* MoDiConnectTests */, 500000000000000000000004 /* Products */,); sourceTree = "<group>"; };
+		500000000000000000000002 /* MoDiConnect */ = {isa = PBXGroup; path = MoDiConnect; sourceTree = "<group>"; children = (300000000000000000000001,300000000000000000000002,300000000000000000000003,300000000000000000000004,300000000000000000000005,300000000000000000000006,300000000000000000000007,300000000000000000000008,300000000000000000000009,30000000000000000000000A,30000000000000000000000B,30000000000000000000000C,30000000000000000000000D,30000000000000000000000E,30000000000000000000000F,300000000000000000000010,300000000000000000000011,300000000000000000000012,300000000000000000000013,300000000000000000000014,300000000000000000000015,300000000000000000000016,); };
+		500000000000000000000003 /* MoDiConnectTests */ = {isa = PBXGroup; path = MoDiConnectTests; sourceTree = "<group>"; children = (300000000000000000000017,300000000000000000000018,300000000000000000000019,30000000000000000000001C,); };
+		500000000000000000000004 /* Products */ = {isa = PBXGroup; name = Products; sourceTree = "<group>"; children = (30000000000000000000001A,30000000000000000000001B,); };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		100000000000000000000001 /* MoDiConnect */ = {isa = PBXNativeTarget; buildConfigurationList = 600000000000000000000001; buildPhases = (700000000000000000000001,400000000000000000000001,700000000000000000000002,); buildRules = (); dependencies = (); name = MoDiConnect; packageProductDependencies = (800000000000000000000001 /* opus */,800000000000000000000003 /* ogg */,); productName = MoDiConnect; productReference = 30000000000000000000001A; productType = "com.apple.product-type.application"; };
+		100000000000000000000002 /* MoDiConnectTests */ = {isa = PBXNativeTarget; buildConfigurationList = 600000000000000000000002; buildPhases = (700000000000000000000003,400000000000000000000002,700000000000000000000004,); buildRules = (); dependencies = (900000000000000000000002,); name = MoDiConnectTests; productName = MoDiConnectTests; productReference = 30000000000000000000001B; productType = "com.apple.product-type.bundle.unit-test"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2700; LastUpgradeCheck = 2700; TargetAttributes = {100000000000000000000001 = {CreatedOnToolsVersion = 27.0;}; 100000000000000000000002 = {CreatedOnToolsVersion = 27.0; TestTargetID = 100000000000000000000001;};};}; buildConfigurationList = 600000000000000000000003; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base,); mainGroup = 500000000000000000000001; packageReferences = (800000000000000000000002 /* XCRemoteSwiftPackageReference */,800000000000000000000004 /* XCRemoteSwiftPackageReference */,); productRefGroup = 500000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (100000000000000000000001,100000000000000000000002,); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		700000000000000000000002 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		700000000000000000000004 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		700000000000000000000001 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (200000000000000000000001,200000000000000000000002,200000000000000000000003,200000000000000000000004,200000000000000000000005,200000000000000000000006,200000000000000000000007,200000000000000000000008,200000000000000000000009,20000000000000000000000A,20000000000000000000000B,20000000000000000000000C,20000000000000000000000D,20000000000000000000000E,20000000000000000000000F,200000000000000000000010,200000000000000000000011,200000000000000000000012,200000000000000000000013,); runOnlyForDeploymentPostprocessing = 0; };
+		700000000000000000000003 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (200000000000000000000015,200000000000000000000016,200000000000000000000017,200000000000000000000019,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		900000000000000000000002 = {isa = PBXTargetDependency; target = 100000000000000000000001 /* MoDiConnect */; targetProxy = 900000000000000000000001; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A00000000000000000000001 = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; ENABLE_TESTABILITY = YES; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 27.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0;}; name = Debug; };
+		A00000000000000000000002 = {isa = XCBuildConfiguration; buildSettings = {ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 27.0; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; SWIFT_VERSION = 5.0;}; name = Release; };
+		A00000000000000000000003 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = MoDiConnect/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 27.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.modi.connect.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = NO; SWIFT_OBJC_BRIDGING_HEADER = "MoDiConnect/MoDiConnect-Bridging-Header.h"; TARGETED_DEVICE_FAMILY = "1,2";}; name = Debug; };
+		A00000000000000000000004 = {isa = XCBuildConfiguration; buildSettings = {ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = MoDiConnect/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 27.0; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.modi.connect.ios; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = NO; SWIFT_OBJC_BRIDGING_HEADER = "MoDiConnect/MoDiConnect-Bridging-Header.h"; TARGETED_DEVICE_FAMILY = "1,2"; VALIDATE_PRODUCT = YES;}; name = Release; };
+		A00000000000000000000005 = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 27.0; PRODUCT_BUNDLE_IDENTIFIER = com.modi.connect.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoDiConnect.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MoDiConnect";}; name = Debug; };
+		A00000000000000000000006 = {isa = XCBuildConfiguration; buildSettings = {BUNDLE_LOADER = "$(TEST_HOST)"; CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; IPHONEOS_DEPLOYMENT_TARGET = 27.0; PRODUCT_BUNDLE_IDENTIFIER = com.modi.connect.ios.tests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoDiConnect.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MoDiConnect";}; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		600000000000000000000001 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000003,A00000000000000000000004,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		600000000000000000000002 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000005,A00000000000000000000006,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		600000000000000000000003 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000001,A00000000000000000000002,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		800000000000000000000002 /* XCRemoteSwiftPackageReference */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/sbooth/opus-binary-xcframework"; requirement = {kind = exactVersion; version = 0.3.0;}; };
+		800000000000000000000004 /* XCRemoteSwiftPackageReference */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/sbooth/ogg-binary-xcframework"; requirement = {kind = exactVersion; version = 0.1.3;}; };
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		800000000000000000000001 /* opus */ = {isa = XCSwiftPackageProductDependency; package = 800000000000000000000002 /* XCRemoteSwiftPackageReference */; productName = opus; };
+		800000000000000000000003 /* ogg */ = {isa = XCSwiftPackageProductDependency; package = 800000000000000000000004 /* XCRemoteSwiftPackageReference */; productName = ogg; };
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 000000000000000000000001 /* Project object */;
+}

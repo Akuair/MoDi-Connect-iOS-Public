@@ -1,0 +1,98 @@
+name: iOS build
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-build.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: xcode-27
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Obtain unchanged upstream protocol test dependency
+        uses: actions/checkout@v4
+        with:
+          repository: LaoYinBai/MoDi-Connect
+          ref: 08fbf17202d46683735d84e3c795b695246a4a6c
+          path: upstream
+          sparse-checkout: third_party/modi-protocol
+      - name: Verify protocol identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p third_party
+          cp -R upstream/third_party/modi-protocol third_party/
+          echo '9ef0ed9b849f27e5eecfd8ac13d0cb86e26b91303fed7c47bf07fe5f04abf325  third_party/modi-protocol/nuget/MoDi.Protocol.0.1.1.nupkg' | shasum -a 256 -c -
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Cross-check production Swift codec against Windows protocol binary
+        run: |
+          swiftc ios/MoDiConnect/MoDiProtocolAdapter.swift ios/Tools/CodecCheck.swift -o /tmp/modi-codec-check
+          /tmp/modi-codec-check > /tmp/modi-swift-packets.txt
+          dotnet run --project ios/Tools/ProtocolProbe -- /tmp/modi-swift-packets.txt
+      - name: Resolve packages
+        run: xcodebuild -resolvePackageDependencies -project ios/MoDiConnect.xcodeproj -scheme MoDiConnect
+      - name: Build and test
+        run: >-
+          xcodebuild test
+          -project ios/MoDiConnect.xcodeproj
+          -scheme MoDiConnect
+          -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=27.0'
+          -resultBundlePath build/iOS-Tests.xcresult
+          CODE_SIGNING_ALLOWED=NO
+      - name: Build device application (unsigned)
+        run: >-
+          xcodebuild build
+          -project ios/MoDiConnect.xcodeproj
+          -scheme MoDiConnect
+          -configuration Release
+          -sdk iphoneos
+          -destination 'generic/platform=iOS'
+          -derivedDataPath build/device
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+          'CODE_SIGN_IDENTITY='
+          'LD_RUNPATH_SEARCH_PATHS=$(inherited) @executable_path/Frameworks'
+      - name: Package unsigned IPA for personal signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP=build/device/Build/Products/Release-iphoneos/MoDiConnect.app
+          test -f "$APP/MoDiConnect"
+          xcrun lipo -verify_arch arm64 "$APP/MoDiConnect"
+          mkdir -p build/ipa/Payload
+          ditto "$APP" build/ipa/Payload/MoDiConnect.app
+          (cd build/ipa && /usr/bin/zip -q -r ../MoDiConnect-unsigned.ipa Payload)
+          unzip -t build/MoDiConnect-unsigned.ipa
+          shasum -a 256 build/MoDiConnect-unsigned.ipa > build/MoDiConnect-unsigned.ipa.sha256
+          echo 'Unsigned device build: requires personal signing before installation. No real-device audio acceptance test has been performed.' > build/INSTALL-NOTE.txt
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: MoDiConnect-unsigned-ipa
+          path: |
+            build/MoDiConnect-unsigned.ipa
+            build/MoDiConnect-unsigned.ipa.sha256
+            build/INSTALL-NOTE.txt
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-test-results
+          path: build/iOS-Tests.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
