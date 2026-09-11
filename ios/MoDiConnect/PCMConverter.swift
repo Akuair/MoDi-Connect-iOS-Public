@@ -35,9 +35,9 @@ final class PCMConverter {
     }
 
     func convert(_ sampleBuffer: CMSampleBuffer) throws -> Data {
-        guard let description = CMSampleBufferGetFormatDescription(sampleBuffer),
-              let sourceFormat = AVAudioFormat(cmAudioFormatDescription: description)
+        guard let description = CMSampleBufferGetFormatDescription(sampleBuffer)
         else { throw PCMConverterError.missingFormat }
+        let sourceFormat = AVAudioFormat(cmAudioFormatDescription: description)
 
         let inputFrames = AVAudioFrameCount(CMSampleBufferGetNumSamples(sampleBuffer))
         guard inputFrames > 0,
@@ -98,3 +98,4 @@ final class PCMConverter {
             lhs.isInterleaved == rhs.isInterleaved
     }
 }
+

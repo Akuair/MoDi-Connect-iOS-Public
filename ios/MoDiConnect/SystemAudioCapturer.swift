@@ -1,20 +1,39 @@
 import CoreMedia
 import Foundation
+#if !targetEnvironment(simulator)
 import ScreenCaptureKit
+#endif
 
 enum SystemAudioCaptureError: LocalizedError {
     case cancelled
     case pickerFailed(String)
+    case requiresPhysicalDevice
 
     var errorDescription: String? {
         switch self {
         case .cancelled: "用户取消了系统音频捕获"
         case .pickerFailed(let message): "系统捕获失败：\(message)"
+        case .requiresPhysicalDevice: "系统音频捕获需要 iOS 27 实体 iPhone；当前模拟器 SDK 不包含 ScreenCaptureKit"
         }
     }
 }
 
-/// iOS 27 ScreenCaptureKit capture. Video output is attached at 1 fps and discarded;
+#if targetEnvironment(simulator)
+/// No fake audio or successful capture state on unsupported simulators.
+final class SystemAudioCapturer {
+    var onAudio: ((CMSampleBuffer) -> Void)?
+    var onStarted: (() -> Void)?
+    var onStopped: ((Error?) -> Void)?
+
+    @MainActor
+    func requestFullDisplayCapture() {
+        onStopped?(SystemAudioCaptureError.requiresPhysicalDevice)
+    }
+
+    func stop() {}
+}
+#else
+/// iOS 27 ScreenCaptureKit capture. Video output is discarded;
 /// only `.audio` sample buffers enter the audio pipeline.
 final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStreamOutput, SCStreamDelegate {
     var onAudio: ((CMSampleBuffer) -> Void)?
@@ -86,8 +105,6 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
         configuration.channelCount = 1
         configuration.width = 2
         configuration.height = 2
-        configuration.queueDepth = 3
-        configuration.minimumFrameInterval = CMTime(seconds: 1, preferredTimescale: 1_000)
 
         let newStream = SCStream(filter: filter, configuration: configuration, delegate: self)
         do {
@@ -112,3 +129,5 @@ final class SystemAudioCapturer: NSObject, SCContentSharingPickerObserver, SCStr
         if !stopping { onStopped?(error) }
     }
 }
+#endif
+

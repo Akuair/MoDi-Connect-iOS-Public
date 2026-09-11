@@ -37,9 +37,9 @@ struct HomeView: View {
 
                 if app.state == .streaming {
                     Section("传输统计") {
-                        LabeledContent("Latency", value: "\(app.metrics.latencyMilliseconds, specifier: "%.0f") ms+")
-                        LabeledContent("Packet rate", value: "\(app.metrics.packetRate, specifier: "%.1f") pps")
-                        LabeledContent("Bitrate", value: "\(app.metrics.bitrate / 1_000, specifier: "%.1f") kbps")
+                        LabeledContent("Latency", value: String(format: "%.0f ms+", app.metrics.latencyMilliseconds))
+                        LabeledContent("Packet rate", value: String(format: "%.1f pps", app.metrics.packetRate))
+                        LabeledContent("Bitrate", value: String(format: "%.1f kbps", app.metrics.bitrate / 1_000))
                         LabeledContent("Dropped frames", value: "\(app.metrics.droppedFrames)")
                     }
                 }
@@ -98,3 +98,4 @@ private struct SettingsView: View {
         }
     }
 }
+

@@ -16,6 +16,8 @@
 
 系统捕获遵循公开 ScreenCaptureKit API，不使用 private API。受保护/DRM 音频是否可捕获由 iOS 和内容提供方决定。
 
+云端 Xcode 27 beta 6 实际 SDK 检查：ScreenCaptureKit 仅存在于 iPhoneOS SDK，不存在于 iPhoneSimulator SDK。模拟器可运行协议、Opus、帧组装单元测试，但开始捕获会明确报错，不能用模拟器验证系统音频。iOS 不提供 macOS 的 `queueDepth` / `minimumFrameInterval` 配置；接收的视频帧直接丢弃，不声称已降至 1 fps。
+
 ## Build
 
 1. 在 macOS 安装 Xcode 27，打开 `ios/MoDiConnect.xcodeproj`。
@@ -101,3 +103,4 @@ xcodebuild test-without-building \
 - AUDIO: type AUDIO、link WIFI_LAN、递增 UInt32 sequence、payload 为纯 Opus packet
 
 在仓库根目录运行 `dotnet run --project ios/Tools/ProtocolProbe`，使用现有 .NET 二进制验证 Swift 测试中的固定样例。macOS/GitHub Actions 还会编译生产 Swift codec，生成224个包交给同一 .NET 二进制验证。具体命令见 WIRE-COMPATIBILITY.md。下一步仍须进行 `iPhone → existing Windows → current default speaker` 真机验收。
+
