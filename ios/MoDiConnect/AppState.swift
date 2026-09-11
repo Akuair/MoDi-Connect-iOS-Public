@@ -5,6 +5,7 @@ import Foundation
 final class AppState: ObservableObject {
     @Published private(set) var state: ConnectionState = .idle
     @Published private(set) var devices: [MoDiDevice] = []
+    @Published private(set) var discoveryMessage: String?
     @Published var selectedDeviceID: String?
     @Published private(set) var metrics = StreamingMetrics()
     @Published var bitrate = 128_000
@@ -14,19 +15,21 @@ final class AppState: ObservableObject {
 
     private let discovery = MoDiDiscovery()
     private var connection = ConnectionManager()
+    private var manualDevice: MoDiDevice?
 
     init() {
         bindConnection()
         discovery.onDevicesChanged = { [weak self] devices in
             Task { @MainActor in
-                self?.devices = devices
-                if self?.selectedDeviceID == nil, devices.count == 1 {
-                    self?.selectedDeviceID = devices[0].id
+                guard let self else { return }
+                self.devices = self.mergeDevices(devices)
+                if self.selectedDeviceID == nil, self.devices.count == 1 {
+                    self.selectedDeviceID = self.devices[0].id
                 }
             }
         }
         discovery.onError = { [weak self] message in
-            Task { @MainActor in self?.state = .failed(message) }
+            Task { @MainActor in self?.discoveryMessage = message }
         }
     }
 
@@ -35,17 +38,41 @@ final class AppState: ObservableObject {
     }
 
     func startDiscovery() {
+        guard canConnect else { return }
         state = .discovering
         discovery.start()
     }
 
     func connectSelected() async {
-        guard let selectedDevice else { return }
+        guard canConnect, let selectedDevice else { return }
+        manualDevice = selectedDevice
+        discovery.stop()
         state = .connecting
         await connection.connect(to: selectedDevice)
     }
 
     func startStreaming() async { await connection.startStreaming() }
+
+    var canConnect: Bool { state == .idle || state == .discovering || isFailure }
+
+    func restartDiscovery() {
+        guard canConnect else { return }
+        discoveryMessage = nil
+        state = .discovering
+        discovery.restart()
+    }
+
+    func selectManual(_ address: LANConnectionAddress) {
+        guard canConnect else { return }
+        manualDevice = address.device
+        devices = mergeDevices(devices.filter { $0.name != "手动电脑" })
+        selectedDeviceID = address.device.id
+    }
+
+    private func mergeDevices(_ discovered: [MoDiDevice]) -> [MoDiDevice] {
+        guard let manualDevice else { return discovered }
+        return [manualDevice] + discovered.filter { $0.id != manualDevice.id }
+    }
 
     func stop() { connection.stop() }
 
@@ -67,3 +94,4 @@ final class AppState: ObservableObject {
         connection.onMetrics = { [weak self] metrics in self?.metrics = metrics }
     }
 }
+

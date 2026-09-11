@@ -43,13 +43,13 @@ final class ConnectionManager {
         self.device = device
         onState?(.handshaking)
         do {
-            try await handshake.handshake(host: host, session: session)
+            try await handshake.handshake(host: host, port: device.handshakePort, session: session)
             self.session = session
             MoDiLogger.debug("Connected SpeakerOnly session \(session.id)", logger: MoDiLogger.handshake)
             onState?(.connected)
         } catch {
             self.session = nil
-            onState?(.failed(error.localizedDescription))
+            onState?(.failed("连接 \(device.address) 握手 UDP \(device.handshakePort.rawValue) 失败：\(error.localizedDescription)。确认 Windows 使用 LAN 模式、IP/端口正确，并允许 MoDi 通过防火墙。"))
         }
     }
 
@@ -83,7 +83,7 @@ final class ConnectionManager {
                 if Task.isCancelled { return }
                 let newSession = MoDiSession.speakerOnly()
                 do {
-                    try await handshake.handshake(host: host, session: newSession)
+                    try await handshake.handshake(host: host, port: device.handshakePort, session: newSession)
                     session = newSession
                     reconnectTask = nil
                     await startStreaming()
@@ -97,3 +97,4 @@ final class ConnectionManager {
         }
     }
 }
+

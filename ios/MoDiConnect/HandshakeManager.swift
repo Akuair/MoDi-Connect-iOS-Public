@@ -7,7 +7,7 @@ struct HandshakeManager {
 
     let protocolAdapter: any MoDiProtocolAdapter
 
-    func handshake(host: NWEndpoint.Host, session: MoDiSession) async throws {
+    func handshake(host: NWEndpoint.Host, port: NWEndpoint.Port = Self.handshakePort, session: MoDiSession) async throws {
         let hello = MoDiPacket(
             type: .hello,
             linkType: Self.wifiLANLinkType,
@@ -19,7 +19,7 @@ struct HandshakeManager {
         for attempt in 1...3 {
             let transport = UDPTransport(label: "com.modi.connect.handshake.\(attempt)")
             defer { transport.close() }
-            try await transport.connect(host: host, port: Self.handshakePort)
+            try await transport.connect(host: host, port: port)
             try await transport.send(wirePacket)
             MoDiLogger.debug("HELLO attempt \(attempt)/3", logger: MoDiLogger.handshake)
             do {
@@ -40,3 +40,4 @@ struct HandshakeManager {
         throw UDPTransportError.timedOut
     }
 }
+

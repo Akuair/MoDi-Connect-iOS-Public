@@ -22,6 +22,8 @@
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>NSLocalNetworkUsageDescription</key>
     <string>用于发现并连接同一局域网中的 MoDi Connect Windows 客户端。</string>
+    <key>NSCameraUsageDescription</key>
+    <string>用于扫描 LAN 连接二维码并填入电脑 IP 和端口，不拍照或保存视频。</string>
     <key>NSBonjourServices</key>
     <array>
         <string>_modi._udp</string>
@@ -36,3 +38,4 @@
     <dict/>
 </dict>
 </plist>
+

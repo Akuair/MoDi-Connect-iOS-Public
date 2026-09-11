@@ -20,6 +20,20 @@
 
 ## Build
 
+## 手动连接与二维码（0.1.1）
+
+首页选择“手动 IP / 端口 · 扫码连接”，填入 Windows 的局域网 IP（可在电脑 `ipconfig` 中查看）。默认音频 UDP 端口 **12345**、握手 UDP 端口 **12347**，不要把两个端口混用。点击“连接电脑”后仍需收到原版 Windows 的 HELLO_ACK 才会显示已连接。Windows 无须修改。
+
+本页可以生成、分享并扫描 `modi://lan?host=192.168.1.100&port=12345&handshakePort=12347` 地址码。扫码仅填入表单，用户确认后才连接。扫描要求相机权限和支持 VisionKit 的真机，不上传或保存相机画面。生成的码只用于本 iOS 客户端分享 LAN 地址，不是新音频协议。
+
+**Windows 现有二维码不能直接用于 LAN**：源码 `QrCodeHelper.BuildQrPayload` 生成的是 `MODI://version=1&transport=wifidirect&device=...&token=...`，没有 LAN IP/端口。iOS 扫到它会给出明确提示，不会把 Wi-Fi Direct token 当作 LAN 握手信息。
+
+若完整错误为 `NWError.dns(-65569)`，Apple 将其定义为 `kDNSServiceErr_DefunctConnection`，表示与系统 DNS-SD 服务的连接失效，而非电脑握手失败。客户端会有限重建发现器，提供“重新发现”按钮；发现失败不会覆盖手动连接状态。`-65570` 才是策略拒绝。本地网络权限被拒绝、Wi-Fi 客户端隔离或防火墙拦截仍可能阻止手动连接。
+
+参考：[Apple DNS-SD 错误定义](https://github.com/apple-oss-distributions/mDNSResponder/blob/main/mDNSShared/dns_sd.h)。新功能的真机扫码、实际 LAN 握手仍须用户设备验证。
+
+## 编译步骤
+
 1. 在 macOS 安装 Xcode 27，打开 `ios/MoDiConnect.xcodeproj`。
 2. Xcode 将解析固定为 `0.3.0` 的 `sbooth/opus-binary-xcframework`，以及该二进制声明需要的 `sbooth/ogg-binary-xcframework` `0.1.3`。
 3. 在 Signing & Capabilities 中选择自己的 Development Team，并按需要更换 bundle identifier。

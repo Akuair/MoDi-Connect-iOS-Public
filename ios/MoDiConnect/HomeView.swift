@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var app: AppState
     @State private var showingSettings = false
+    @State private var showingManualConnection = false
 
     var body: some View {
         NavigationStack {
@@ -13,6 +14,9 @@ struct HomeView: View {
                 }
 
                 Section("发现的设备") {
+                    if let message = app.discoveryMessage {
+                        Text(message).font(.footnote).foregroundStyle(.orange)
+                    }
                     if app.devices.isEmpty {
                         ContentUnavailableView("尚未发现电脑", systemImage: "desktopcomputer.and.macbook")
                     }
@@ -32,7 +36,13 @@ struct HomeView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .disabled(!app.canConnect)
                     }
+                    Button("重新发现", systemImage: "arrow.clockwise") { app.restartDiscovery() }
+                        .disabled(!app.canConnect)
+                    Button("手动 IP / 端口 · 扫码连接", systemImage: "qrcode.viewfinder") {
+                        showingManualConnection = true
+                    }.disabled(!app.canConnect)
                 }
 
                 if app.state == .streaming {
@@ -55,6 +65,7 @@ struct HomeView: View {
                 Button("设置", systemImage: "gear") { showingSettings = true }
             }
             .sheet(isPresented: $showingSettings) { SettingsView() }
+            .sheet(isPresented: $showingManualConnection) { ManualConnectionView() }
         }
     }
 
@@ -63,6 +74,7 @@ struct HomeView: View {
         switch app.state {
         case .connected:
             Button("开始传输") { Task { await app.startStreaming() } }
+            Button("断开连接", role: .destructive) { app.stop() }
         case .streaming, .startingCapture, .reconnecting:
             Button("停止", role: .destructive) { app.stop() }
         case .connecting, .handshaking, .stopping:
